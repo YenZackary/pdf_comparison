@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PDF Comparison Result</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+    <style>
+        .output-container,
+        .dashboard-grid.output-container {
+            gap: 0;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        .main-content {
+            margin-left: 50px;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .main-content h1 {
+            font-size: 2.1em;
+            margin-bottom: 50px;
+            color: #333;
+            text-align: center;
+        }
+        .warning {
+            font-weight: bold;
+            font-size: 15px;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            background-color: #fff3cd;
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .version-title {
+            font-size: 30px;
+            font-weight: bold;
+            color: #333;
+            margin: 0;
+            height: 100px;
+            display: flex;
+            align-items: center;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: repeat(3, auto);
+            gap: 0;
+            padding: 20px;
+            border-radius: 12px;
+            background-color: #f0f0f0;
+        }
+        .dashboard-grid .block {
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .total-block {
+            grid-column: 1;
+            grid-row: 1 / span 3;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .center-text {
+            width: 100%;
+            text-align: center;
+        }
+        .total-label {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .total-number {
+            font-size: 60px;
+            font-weight: bold;
+            color: #333;
+            line-height: 1;
+        }
+        .middle-block {
+            grid-column: 2;
+            grid-row: 1 / span 3;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .middle-block .btn-stack {
+            display: flex;
+            gap: 40px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .btn-block {
+            grid-column: 3;
+            grid-row: 1 / span 3;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        .btn-stack {
+            display: flex;
+            gap: 40px;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .feature-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        .feature-icon {
+            font-size: 48px;
+            color: #61884d;
+        }
+        .feature_reverse-icon {
+            font-size: 48px;
+            color: #3a86dd;
+        }
+        .btn {
+            text-decoration: none;
+            color: #fff;
+            background-color: #61884d;
+            padding: 8px 16px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+        .btn-fixed {
+            width: 100px;
+            justify-content: center;
+        }
+        .btn-action:hover {
+            background-color: #ff951d;
+        }
+        .btn_reverse {
+            text-decoration: none;
+            color: #fff;
+            background-color: #3a86dd;
+            padding: 8px 16px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+        .btn_reverse-fixed {
+            width: 100px;
+            justify-content: center;
+        }
+        .btn_reverse-action:hover {
+            background-color: #d5f32e;
+        }
+        .pdf-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 50px;
+            background-color: #f0f0f0;
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .pdf-section .pdf-box {
+            flex: 1;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-sizing: border-box;
+        }
+        .pdf-box h3,
+        .pdf-box a.download-link {
+            display: inline-block;
+            margin: 0 8px 0 0;
+            vertical-align: middle;
+        }
+        .download-link {
+            color: #2a9df4;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.3s ease;
+        }
+        .download-link:hover {
+            border-bottom-color: #2a9df4;
+            color: #0b71d0;
+            cursor: pointer;
+        }
+        .middle-button-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .middle-btn {
+            background-color: #4d4845;
+            color: white;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        .middle-btn:hover {
+            background-color: #eabd9b;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .dashboard-wrapper .dashboard-grid {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+
+        <h1>Comparison Results Between the Two Uploaded PDFs</h1>
+        
+        <div class="pdf-section">
+            <div class="pdf-box">
+                <h3>Old PDF</h3>
+                <a href="{{ old_pdf }}" download="{{ original_filename1 }}" class="download-link">
+                    {{ original_filename1 }}
+                </a>
+            </div>
+            <div class="pdf-box">
+                <h3>New PDF</h3>
+                <a href="{{ new_pdf }}" download="{{ original_filename2 }}" class="download-link">
+                    {{ original_filename2 }}
+                </a>
+            </div>
+        </div>
+
+        <div class="dashboard-wrapper">
+
+            <!-- 舊版本 -->
+            <div class="dashboard-grid output-container">
+                <div class="block total-block">
+                    <h3 class="version-title">Changes Seen from Old PDF</h3>
+                </div>
+                <div class="block middle-block">
+                    <div class="total-label">Total Differences</div>
+                    <div class="total-number" style="color: #3a86dd;">{{ total_changes_reverse }}</div>
+                </div>
+                <div class="block btn-block">
+                    <div class="btn-stack">
+                        <div class="feature-block">
+                            <i class="fas fa-file-pdf feature_reverse-icon"></i>
+                            <a href="/view_reverse/{{ uid }}" target="_blank" class="btn_reverse btn_reverse-action btn_reverse-fixed">
+                                <i class="fas fa-arrow-right"></i> View
+                            </a>
+                        </div>
+                        <div class="feature-block">
+                            <i class="fas fa-download feature_reverse-icon"></i>
+                            <a href="/download_reverse/{{ uid }}" class="btn_reverse btn_reverse-action btn_reverse-fixed">
+                                <i class="fas fa-arrow-right"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 新版本 -->
+            <div class="dashboard-grid output-container">
+                <div class="block total-block">
+                    <h3 class="version-title">Changes Seen from New PDF</h3>
+                </div>
+                <div class="block middle-block">
+                    <div class="total-label">Total Differences</div>
+                    <div class="total-number" style="color: #61884d;">{{ total_changes }}</div>
+                </div>
+                <div class="block btn-block">
+                    <div class="btn-stack">
+                        <div class="feature-block">
+                            <i class="fas fa-file-pdf feature-icon"></i>
+                            <a href="/view/{{ uid }}" target="_blank" class="btn btn-action btn-fixed">
+                                <i class="fas fa-arrow-right"></i> View
+                            </a>
+                        </div>
+                        <div class="feature-block">
+                            <i class="fas fa-download feature-icon"></i>
+                            <a href="/download/{{ uid }}" class="btn btn-action btn-fixed">
+                                <i class="fas fa-arrow-right"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+
+        <div class="middle-button-container">
+            <a href="/" class="btn btn-action middle-btn">Compare Another PDF</a>
+        </div>
+    </div>
+</body>
+</html>
